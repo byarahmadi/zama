@@ -1,0 +1,22 @@
+LLVM_CONFIG?=llvm-config
+CXX=clang
+
+SRC_DIR?=$(PWD)
+LDFLAGS+=$(shell $(LLVM_CONFIG) --ldflags)
+COMMON_FLAGS=-Wall -Wextra
+CXXFLAGS+=$(COMMON_FLAGS) $(shell $(LLVM_CONFIG) --cxxflags) -D_GLIBCXX_USE_CXX11_ABI=0
+CPPFLAGS+=$(shell $(LLVM_CONFIG) --cppflags) -I$(SRC_DIR)
+
+LOADABLE_MODULE_OPTIONS=-shared  -W1 -O1
+
+EMITCODE_PASS=emitcode.so
+EMITCODE_OBJECTS=EmitCodePass.o
+
+default:$(EMITCODE_PASS)
+
+%o:$(SRC_DIR)/%.cpp
+	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $<
+$(EMITCODE_PASS):$(EMITCODE_OBJECTS)
+	$(CXX) -o $@ $(LOADABLE_MODULE_OPTIONS) $(CXXFLAGS) $(LDFLAGS) $^
+clean:
+	rm -f $(EMITCODE_PASS) $(EMITCODE_OBJECTS)
