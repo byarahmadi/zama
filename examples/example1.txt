@@ -1,0 +1,2 @@
+not(not(b)) and c or false and not(c)
+
