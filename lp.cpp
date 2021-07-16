@@ -64,10 +64,6 @@ static int gettok() {
   LastChar = getchar();
   return ThisChar;
 }
-/* template<typename T, typename... Args>
-std::unique_ptr<T> make_unique(Args&&... args) {
-    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-} */
 
 namespace {
 
@@ -124,7 +120,7 @@ class BinaryExprAST : public ExprAST {
 //===----------------------------------------------------------------------===//
 
 /// CurTok/getNextToken - Provide a simple token buffer.  CurTok is the current
-/// token the parser is looking at.  getNextToken reads another token from the
+/// token the parser is looking at.  getNextToken eads another token from the
 /// lexer and updates CurTok with its results.
 static int CurTok;
 static int getNextToken() { return CurTok = gettok(); }
@@ -152,7 +148,6 @@ static std::unique_ptr<ExprAST> ParseExpression();
 
 static std::unique_ptr<ExprAST> ParseNumberExpr() {
   // auto Result = llvm::make_unique<NumberExprAST>(NumVal);
-  cout << "The numbers is " << IdentifierStr;
   getNextToken();  // consume the number
   return llvm::make_unique<NumberExprAST>(NumVal);
 }
@@ -186,7 +181,6 @@ static std::unique_ptr<ExprAST> ParseIdentifierExpr() {
   std::string IdName = IdentifierStr;
 
   getNextToken();  // eat identifier.
-  cout << endl << "Identifier " << IdName << " has been found" << endl;
 
   return llvm::make_unique<VariableExprAST>(IdName);
 }
@@ -217,11 +211,6 @@ static std::unique_ptr<ExprAST> ParseBinOpRHS(int ExprPrec,
   // If this is a binop, find its precedence.
   while (true) {
     int TokPrec = GetTokPrecedence();
-
-    cout << endl << "In a ParsBinOpRHS" << endl;
-
-    cout << IdentifierStr << endl;
-
     // If this is a binop that binds at least as tightly as the current binop,
     // consume it, otherwise we are done.
     if (TokPrec < ExprPrec) return LHS;
@@ -293,8 +282,6 @@ Value *BinaryExprAST::codeGen() {
   Value *R = RHS->codeGen();
   if (!L || !R) return nullptr;
 
-  L->dump();
-  R->dump();
   switch (Op) {
     case tok_and:
 
@@ -315,7 +302,6 @@ Value *BinaryExprAST::codeGen() {
 static void HandleTopLevelExpression() {
   // Evaluate a top-level expression into an anonymous function.
   if (auto topExpr = ParseExpression()) {
-    fprintf(stderr, "Parsed a top-level expr\n");
     topExpr->codeGen();
   } else {
     // Skip token for error recovery.
@@ -326,7 +312,6 @@ static void HandleTopLevelExpression() {
 /// top ::= definition | external | expression | ';'
 static void MainLoop() {
   while (true) {
-    fprintf(stderr, "ready> ");
     switch (CurTok) {
       case tok_eof:
         return;
@@ -347,7 +332,6 @@ int main() {
   BinopPrecedence[tok_or] = 10;
   BinopPrecedence[tok_and] = 20;
   // Prime the first token.
-  fprintf(stderr, "ready> ");
   getNextToken();
 
   TheModule = llvm::make_unique<Module>("module_template", TheContext);
@@ -361,7 +345,6 @@ int main() {
   MainLoop();
   // The basic block terminator
   Builder.CreateRet(Builder.getInt32(0));
-  TheModule->print(errs(), nullptr);
 
   verifyModule(*TheModule);
 

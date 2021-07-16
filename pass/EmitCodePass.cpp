@@ -95,7 +95,6 @@ class EmitCodePass : public BasicBlockPass {
         loadFile<<varName<<" "<<reg<<endl;
 
       }
-      Inst.dump();
       if (Inst.isBinaryOp()) {
         string opName = Inst.getOpcodeName();
         string operand0 = "";
