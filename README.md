@@ -8,6 +8,10 @@ To run you can use the run.sh script with the input file
 
 For instance :
 `run.sh examples/example1.txt`
+`a=1`
+`b=1`
+`c=1`
+`The result is 1`
 
 The compiler has three parts :
 - A lexer and a parser **lp.cpp**
@@ -20,4 +24,11 @@ the generated AST. The recursive decent parser is a modification of Kaleidoscope
 The llvm pass (EmitCodePass.cpp) is resposible for lowering and transofrming LLVM IR to the nand machine code. It generates an **output** file contatining machine code as well as a file called 
 **loads** containig the variables in the program
 
-The simulator executes the generated machine code. If there are variables in the program, it asks the user for values from the standard input. 
+The simulator executes the generated machine code. If there are variables in the program, it asks the user for values from the standard input. Values in logic are either true of false. The user can input 
+1 for indicating true and 0 for indicating false.
+
+Some comments :
+
+It was possible to generate the final machine code from the AST as the machine language was so simple and straightforward(unlimited number of registers). However, transforming the language to the intermidiete code like LLVM IR  makes the compiler extensible. Also, it provdides using hundereds of  optimizations available in the reach compiler ecosystem like LLVM. 
+
+The high level language has three operations (**not**, **and** , **or**). However, the nand machine has ony one operation which is **nand**. Most logic operations can be made by nand which in this project have been used. https://en.wikipedia.org/wiki/NAND_logic   
